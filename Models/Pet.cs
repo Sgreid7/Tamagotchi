@@ -10,7 +10,9 @@ namespace Tamagotchi.Models
 
     public DateTime Birthday { get; set; }
 
-    public DateTime DeathDate { get; set; }
+    public DateTime? DeathDate { get; set; }
+
+    public DateTime? LastInteractedWithDate { get; set; }
 
     public Boolean IsDead { get; set; }
 
