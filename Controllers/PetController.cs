@@ -27,7 +27,7 @@ namespace Tamagotchi.Controllers
       return pets.ToList();
     }
 
-    [HttpGet("/all/alive")]
+    [HttpGet("all/alive")]
     public List<Pet> GetAllAlivePets()
     {
       var pets = db.Pets.Where(pet => pet.IsDead == false);
@@ -54,7 +54,7 @@ namespace Tamagotchi.Controllers
       return pet;
     }
 
-    [HttpPut("{id}/play")]
+    [HttpPut("play/{id}")]
     public Pet PlayWithPet(int id)
     {
       int result = rnd.Next(1, 100);
@@ -84,12 +84,13 @@ namespace Tamagotchi.Controllers
       return petToPlayWith;
     }
 
-    [HttpPut("{id}/feed")]
+    [HttpPut("feed/{id}")]
     public Pet FeedPet(int id)
     {
       int result = rnd.Next(1, 100);
       var petToFeed = db.Pets.FirstOrDefault(pet => pet.Id == id);
       petToFeed.IsDead = false;
+
       //   check if pet hasnt been interacted with in 3 days
       var daysSinceLastPlayed = DateTime.Now.Subtract(petToFeed.LastInteractedWithDate.Value).TotalDays;
       if (daysSinceLastPlayed >= 3)
@@ -98,11 +99,13 @@ namespace Tamagotchi.Controllers
         petToFeed.DeathDate = DateTime.Now;
         petToFeed.IsDead = true;
       }
+
       if (result <= 10)
       {
         petToFeed.IsDead = true;
         petToFeed.DeathDate = DateTime.Now;
       }
+
       else
       {
         petToFeed.HungerLevel -= 5;
@@ -113,7 +116,7 @@ namespace Tamagotchi.Controllers
       return petToFeed;
     }
 
-    [HttpPut("{id}/scold")]
+    [HttpPut("scold/{id}")]
     public Pet ScoldPet(int id)
     {
       int result = rnd.Next(1, 100);

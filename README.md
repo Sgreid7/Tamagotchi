@@ -1,28 +1,64 @@
-# Defualt Template for SDG .NET Course
+# Tamagotchi
 
-This is the default template for a simple .NET Core Web API. This template has:
+# Objectives
 
-- CORS Enabled
-- Swagger
-- Postgres & EF Core
-- Ready for Docker Deployment
+- Create an API that can CRUD against a Database
+- Re-enforce SQL fundamentals
+- One to many relationships
 
-## TODO:
+- [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)
+- [LINQ](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/)
+- [EF CORE](https://docs.microsoft.com/en-us/ef/core/)
+- [POSTGRESQL](https://www.postgresql.org/)
+- [CONTROLLERS](https://docs.microsoft.com/en-us/dotnet/api/system.web.mvc.controller?view=aspnet-mvc-5.2)
+- [POSTMAN](https://www.postman.com/)
+- [MVC](https://dotnet.microsoft.com/apps/aspnet/mvc)
 
-- Make this in into a template
+# Featured Code
 
-to use:
+## API Endpoint
 
-- [ ] Update your database name in `DatabaseContext.cs`
+```JSX
+[HttpPut("feed/{id}")]
+    public Pet FeedPet(int id)
+    {
+      int result = rnd.Next(1, 100);
+      var petToFeed = db.Pets.FirstOrDefault(pet => pet.Id == id);
+      petToFeed.IsDead = false;
 
-to Deploy to heroku:
+      //   check if pet hasnt been interacted with in 3 days
+      var daysSinceLastPlayed = DateTime.Now.Subtract(petToFeed.LastInteractedWithDate.Value).TotalDays;
+      if (daysSinceLastPlayed >= 3)
+      {
+        // if so set death date to now - last interacted with
+        petToFeed.DeathDate = DateTime.Now;
+        petToFeed.IsDead = true;
+      }
 
-- [ ] create a web app on heroku, make sure to have the CLI downloaded, installed, logged in and be logged into the container via heroku.
-- [ ] Update your `dockerfile` to use your `*.dll` file instead of `dotnet-sdg-template.dll`
-- [ ] Update the deploy script:
-  - [ ] change `sdg-template-image` to `your-project-name-image`
-  - [ ] change `heroku-web-app` to your web app name on heroku
+      if (result <= 10)
+      {
+        petToFeed.IsDead = true;
+        petToFeed.DeathDate = DateTime.Now;
+      }
 
-## PROTIP:
+      else
+      {
+        petToFeed.HungerLevel -= 5;
+        petToFeed.HappinessLevel += 3;
+        petToFeed.LastInteractedWithDate = DateTime.Now;
+      }
+      db.SaveChanges();
+      return petToFeed;
+    }
+```
 
-When you are complete with the project and have turned it in to your instructor, update this read me with details about the assignment.
+# User Actions
+
+- GET /api/pet, this returns all pets in the database.
+- GET /api/pet/all/alive, returns all the pets that are alive.
+- GET /api/pet/{id}, This returns the pet with the corresponding Id.
+- POST /api/pet, This creates a new pet. The body of the request should contain the name of the pet.
+- PUT /api/pet/play/{id}, This finds the pet by id, and add 5 to its happiness level and add 3 to its hungry level
+- PUT /api/pet/feed/{id}, This finds the pet by id, and remove 5 from its hungry level and add 3 to its happiness level.
+- PUT /api/pet/scold/{id}, This finds the pet by id, and remove 5 from its happiness level
+- DELETE /api/pet/{id}, This deletes a pet from the database by Id
